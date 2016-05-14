@@ -1,23 +1,11 @@
-package pokedex_generic_nb;
-
 /**
 *
 * Ein Pokemon
 *
 * @author Lennart Almstedt 4633202 Group 11d
 * @author Maximilian von Unwerth 4568393 Group 11d
-* @author Joshua Heinemann 4701655 Group 11d
 */
-public class Pokemon implements Comparable {
-    /**
-    * Das vorherige Element der Liste
-    */
-    private Pokemon prev;
-    /**
-    * Das naechste Element der Liste
-    */
-    private Pokemon next;
-    
+public class Pokemon implements Comparable<Pokemon> {
     /**
     * Die Nummer des Pokemons
     */
@@ -67,21 +55,6 @@ public class Pokemon implements Comparable {
     * fuer das korrekt gezeichnete Layout
     */
     private final int longestString = 15;
-    /**
-    * NULL-Pokemon-Konstruktor (Standartkonstruktor)
-    */
-    public Pokemon() {
-        this.nr = -1;
-        this.name = "";
-        this.type1 = "";
-        this.type2 = "";
-        this.total = 0;
-        this.atk = 0;
-        this.def = 0;
-        this.spatk = 0;
-        this.spdef = 0;
-        this.speed = 0;
-    }
     /**
     * Pokemon-Konstruktor, welcher das Objekt mit folgenden Werten
 	* initialisiert.
@@ -153,34 +126,6 @@ public class Pokemon implements Comparable {
         return sName;
     }
     /**
-    * An vorderes Element ankoppeln
-    * @param pkm vorderes Pokemon
-    */
-    public void setPrev(Pokemon pkm) {
-        this.prev = pkm;
-    }
-    /**
-    * Vorheriges Element zurueckgeben
-    * @return Vorheriges Pokemon
-    */
-    public Pokemon prev() {
-        return prev;
-    }
-    /**
-    * Nachfolgendes Element setzen
-    * @param pkm Naechstes Pokemon
-    */
-    public void setNext(Pokemon pkm) {
-        this.next = pkm;
-    }
-    /**
-    * Gibt naechste Pokemon zurueck
-    * @return Nachfolgendes Pokemon
-    */
-    public Pokemon next() {
-        return next;
-    }
-    /**
     * Werte in Strings umwandeln und
     * kompletten Eintrag als Reihe speichern
     * @return Formatierte Reihe
@@ -205,18 +150,22 @@ public class Pokemon implements Comparable {
         return formatedLine;
     }
     
-    public int compareTo(Object p) {
-        if(p instanceof Pokemon) {
-            if(nr < ((Pokemon) p).getNr()) {
-                return -1;
-            }
-            if(nr == ((Pokemon)p).getNr()) {
-                return 0;
-            }
-            if(nr > ((Pokemon) p).getNr()) {
-                return 1;
-            }
-        }
-        return 0;
+    /**
+     * Vergleiche das Pokemon mit einem anderen
+     *
+     * @param p Anderes Pokemon
+     * @return Anderes Pokemon groesser, gleich oder kleiner wie dieses Pokemon
+     */
+    public int compareTo(Pokemon p) {
+            return nr - p.getNr();
+    }
+
+    /**
+     * Gibt den Namen zurueck
+     *
+     * @return Der Name
+     */
+    public String getName() {
+        return name;
     }
 }

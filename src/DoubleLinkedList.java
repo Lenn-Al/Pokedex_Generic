@@ -1,5 +1,3 @@
-package pokedex_generic_nb;
-
 import java.util.function.Predicate;
 
 /**
@@ -47,7 +45,7 @@ public class DoubleLinkedList<T extends Comparable<T>> implements List<T> {
 	}
 
 	/**
-	* 
+	* Die Länge der Liste
 	*/
 	@Override
 	public int length() {
@@ -65,22 +63,25 @@ public class DoubleLinkedList<T extends Comparable<T>> implements List<T> {
 
 	/**
 	* Fuegt ein Pokemon sortiert in die Liste ein
-	* @param Einzufuegendes Pokemon
+	* @param item das Pokemon
 	*/
 	@Override
 	public void insert(T item) {
-        Node x = head;
-        Node y = head.next;
+        Node prevNode = head;
+        Node currentNode = head.next;
         Node m = new Node();
         m.item = item;
-        while (y != tail && y.item.compareTo(item) <= 0) {
-            x = x.next;
-            y = y.next;
+        //Durchlaufe die Liste solange, bis entweder das Ende der Liste oder ein Element groesser als das einzufuegende Element gefunden wird.
+        //Fuege das neue Element dann vor diesem ein.
+        while (currentNode != tail && currentNode.item.compareTo(item) <= 0) {
+            prevNode = prevNode.next;
+            currentNode = currentNode.next;
         }
-        x.next = m;
-        y.prev = m;
-        m.prev = x;
-        m.next = y;
+        //Aendere die Zeiger der Knoten entsprechend, um das neue Element in die Liste zu integrieren.
+        prevNode.next = m;
+        currentNode.prev = m;
+        m.prev = prevNode;
+        m.next = currentNode;
         n++;
 	}
 
@@ -89,97 +90,122 @@ public class DoubleLinkedList<T extends Comparable<T>> implements List<T> {
 	*/
 	@Override
 	public void delete(T item) {
-        Node x = head;
-        Node y = head.next;
-       
-        while (y != tail && y.item.compareTo(item) != 0) {
-            x = x.next;
-            y = y.next;
+        Node prevNode = head;
+        Node currentNode = head.next;
+        //Durchlaufe die Liste solange, bis entweder das Ende der Liste erreicht wird, oder bis das gesuchte Element gefunden wird
+        //Loesche dieses Element dann.
+        while (currentNode != tail && currentNode.item.compareTo(item) != 0) {
+            prevNode = prevNode.next;
+            currentNode = currentNode.next;
         }
-        y.next.prev = x;
-        x.next = y.next;
+        currentNode.next.prev = prevNode;
+        prevNode.next = currentNode.next;
         n--;
 	}
-        
-        public T delete() {
-            Node x = head.next;
-            
-            delete(x.item);
-            return x.item;
-        }
+
+    /**
+     * Löscht das erste Element der Liste
+     * @return Das Item des Gelöschten Elements
+     */
+    public T delete() {
+        Node currentNode = head.next;
+        delete(currentNode.item);
+        return currentNode.item;
+    }
 	
 	/**
 	* Gibt die Liste als Stirng zurueck
 	* @return Die Liste als String
 	*/
 	public String toString() {
-        Node x = head.next;
-        String s = "";
-          
-        while (x != tail) {
-            s += x.item.toString() + "\n";
-            x = x.next;
+        Node currNode = head.next;
+        String listString = "";
+        while (currNode != tail) {
+            listString += currNode.item.toString() + "\n";
+            currNode = currNode.next;
         }
-            
-        return s;
+        return listString;
 	}
-        
-        @Override
-        public boolean isInList(T x) {
-            Node curr = head.next;
-            
-            while(curr != tail) {
-                if(curr.item.compareTo(x) == 0) {
-                    return true;
-                }
-                
-                curr = curr.next;                curr = curr.next;
 
+    /**
+    * is Element in the list?
+    * @param x element whose presence in this list is to be tested
+    * @return is Element in the list?
+    */
+    @Override
+    public boolean isInList(T x) {
+        Node curr = head.next;
+        //Durchlaufe die Liste, bis das Ende erreicht ist
+        while (curr != tail) {
+            //Falls gesuchtes Element gefunden, gebe sofort wahr zurueck
+            if (curr.item.compareTo(x) == 0) {
+                return true;
             }
-            
-            return false;
+        curr = curr.next;
         }
+        return false;
+    }
+
+    /**
+     * Get the element with index "index"
+     * @param index - index of the element to return
+     * @return The Element with index "index"
+     */
+    public T get(int index) {
+        Node currNode = head.next;
+        int i = 1;
+        //Exepton bei ungueltigem Index
+        if(index > n || index < 1) {
+            throw new IllegalArgumentException();
+        }
+        //Durchlaufe die Liste, bis Element mit Nummer "Index" erreicht ist. 
+        while(i < index) {
+            currNode = currNode.next;
+            i++;
+        }
+        return currNode.item;
+    }
+
+    /**
+     * Haenge die Liste "list" an die Liste an
+     *
+     * @param list Anzuhaengende Liste
+     *     
+     */
+    public void addAll(List<T> list) {
+        Node currNode;
+
+        while(!list.isEmpty()) {
+            currNode = new Node(); //Reset currNode
+            currNode.item = list.delete();
+            
+            //Fuege neues Element hinten in die Liste ein
+            currNode.next = tail;
+            currNode.prev = tail.prev;
+            tail.prev.next = currNode;
+            tail.prev = currNode;
+
+            n++;
+            }
+        }
+    
+    /**
+     * Filtert die Liste nach dem uebergebenen Predikat
+     *
+     * @param predcate Das Predikat, nach dem gefiltert werden soll
+     */
+    public List<T> filter(Predicate<T> predicate) {
+        DoubleLinkedList<T> filteredList = new DoubleLinkedList<>(); //DoubleLinkedList<T> filteredList = new DoubleLinkedList();
         
-        public T get(int index) {
-            Node x = head.next;
-            int i = 1;
-            
-            if(index < n) {
-                throw new IllegalArgumentException();
-            }
-            
-            while(i < index) {
-                x = x.next;
-                i++;
-            }
-            return x.item;
-        }
+        Node currNode = head.next;
         
-        public void addAll(List<T> list) {
-            Node x = new Node();
-            while(!list.isEmpty()) {
-                x.item = list.delete();
-                
-                //Fuege neues Element hinten in die Liste ein
-                x.prev = tail.prev;
-                x.next = tail;
-                tail.prev.next = x;
-                tail.prev = x;
+        while(currNode != tail) {
+            if(predicate.test(currNode.item)) {
+                filteredList.insert(currNode.item);
             }
+            currNode = currNode.next;
         }
-        
-        public List<T> filter(Predicate<T> predicate) {
-            DoubleLinkedList<T> dl = new DoubleLinkedList();
-            
-            Node x = head.next;
-            
-            while(x != tail) {
-                if(predicate.test(x.item)) {
-                    dl.insert(x.item);
-                }
-            }
-            
-            return dl;
-        }
+        return filteredList;
+    }
         
 }

@@ -1,5 +1,3 @@
-package pokedex_generic_nb;
-
 import java.util.function.Predicate;
 
 /**
